@@ -90,7 +90,14 @@
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
-            Nueva nota cancelada.
+            Error:
+            @if($errors->any())
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <span>{{ $error }}</span> 
+                    @endforeach
+                </ul>
+            @endif
         </div>
     </div>
 </div>
@@ -127,8 +134,7 @@
                             <div class="col">
                                 <div class="container form-check">
                                     <label class="form-check-label" for="flexCheckDefault">
-                                        <input class="form-check-input" type="checkbox" value="test" id="status"
-                                            name="status" required>
+                                        <input class="form-check-input" type="checkbox" name="status" value="test" required>
                                         Acepta los terminos y condiciones.
                                     </label>
                                 </div>
@@ -163,6 +169,12 @@
             var bsAlert = new bootstrap.Toast(myAlert);
             bsAlert.show();
         };
+        
+        @if($errors->any())
+            var myAlert =document.getElementById('toastNotice');
+            var bsAlert = new bootstrap.Toast(myAlert);
+            bsAlert.show();
+        @endif
 
 
 </script>

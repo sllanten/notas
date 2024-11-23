@@ -4,37 +4,44 @@ namespace App\Http\Controllers;
 
 use App\Models\Nota;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 
 class NotaController extends Controller
 {
     public function getData(){
-        $ntTest= Nota::where('status','test')->count();
-        $ntCant= Nota::all()->count();
-        $ntFail= Nota::where('status','fail')->count();
-        $ntFish= Nota::where('status','congration')->count();
-
         $data = array(
-            "ntFish" => (int)$ntFish,
-            "ntCant" => (int)$ntCant,
-            "ntfail" => (int)$ntFail,
-            "ntTest" => (int)$ntTest
+            "ntFish" => (int)Nota::where('status','congration')->count(),
+            "ntCant" => (int)Nota::all()->count(),
+            "ntfail" => (int)Nota::where('status','fail')->count(),
+            "ntTest" => (int)Nota::where('status','test')->count()
         );
         
         return json_encode($data);
-
     }
 
     public function index(){
         $data= json_decode($this->getData());
-
         return view('welcome', compact('data'));
-
     }
 
-    public function store(Request $request){
+    public function storage(Request $request){
+        $request->validate([
+            'status' => 'required|string|max:4',
+            ],[
+                'status.required' => 'El campo status es obligatorio.',
+                'status.max' => 'El campo status como maximo se espera 4 caracteres.',
+            ]);
+
+        if(($_POST['status'] != "congration") || ($_POST['status'] != "fail") || ($_POST['status'] != "test")){
+            return redirect()->route('wellcome');
+        }
+
         $ntNew= new Nota();
         $ntNew->status= $request->status;
         $ntNew->save();
+
+        return redirect()->route('wellcome');
+
     }
 }
