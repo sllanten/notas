@@ -41,7 +41,7 @@
         @endif
 
         <li class="nav-item">
-            <a href="#" class="linkJv" id="toastbtn">Notificacion</a>
+            <a href="#" class="linkJv" id="toastbtn" onclick="msg('desde btn')">Notificacion</a>
         </li>
 
         @endauth
@@ -51,18 +51,15 @@
         <div class="container text-center grid gap-6 lg:grid-cols-2 lg:gap-8">
             <div class="container row row-cols-1 row-cols-md-1 g-4">
                 <div class="col">
-                    <div class="card text-white bg-secondary" style="height: 100%;max-width: 100%;">
+                    <div class="card text-white bg-secondary cardJv">
                         <div class="card-header"></div>
                         <div class="card-body">
-                            <h1 class="card-title" style="font-size: 70px">{{ $data->ntFish }}</h1>
+                            <h1 class="card-title hJv" id="ntFish"></h1>
                             <h5>Notas contretadas</h5>
                             <div class="row row-cols-1 row-cols-md-1 py-3">
-                                <p class="card-text" style="font-size: 20px">Cantidad de notas: <span>{{ $data->ntCant
-                                        }}</span></p>
-                                <p class="card-text" style="font-size: 20px">Notas canceladas: <span>{{ $data->ntfail
-                                        }}</span></p>
-                                <p class="card-text" style="font-size: 20px">Notas de prueba: <span>{{ $data->ntTest
-                                        }}</span></p>
+                                <p class="card-text pJv">Cantidad de notas: <span id="ntCant"></span></p>
+                                <p class="card-text pJv">Notas canceladas: <span id="ntFail"></span></p>
+                                <p class="card-text pJv">Notas de prueba: <span id="ntTest"></span></p>
                             </div>
                         </div>
                         <div class="card-footer row row-cols-2 row-cols-md-2">
@@ -161,48 +158,60 @@
 
             horaHow = hora + " : " + minuto + " : " + segundo 
             document.querySelector('#textHora').innerText = horaHow;
-            document.querySelector('#text-toast').innerText = message;
-        }
-
-        document.getElementById("toastbtn").onclick = function() {
-            msg('desde btn');
+            document.getElementById('text-toast').innerHTML= message
             var myAlert =document.getElementById('toastNotice');
             var bsAlert = new bootstrap.Toast(myAlert);
             bsAlert.show();
-        };
+        }
         
         @if($errors->any())
             msg('Error:');
-            var myAlert =document.getElementById('toastNotice');
-            var bsAlert = new bootstrap.Toast(myAlert);
-            bsAlert.show();
         @endif
 
+        var requestOptions = {
+            method: 'GET',
+            redirect: 'follow'
+        };
+        
+        function asignar(data){
+            document.getElementById('ntFish').innerText = data.ntFish || '0';
+            document.getElementById('ntCant').innerText = data.ntCant || '0';
+            document.getElementById('ntFail').innerText = data.ntfail || '0';
+            document.getElementById('ntTest').innerText = data.ntTest || '0';
+        }
+        
+        fetch("http://127.0.0.1:8000/api/getData", requestOptions)
+        .then(response => {
+        if (!response.ok) {
+            throw new Error(`Error al obtener los datos`);
+        }
+        return response.json();
+        })
+        .then(data => {
+            asignar(data);
+        })
+        .catch(error => {
+            console.log(`Error: ${error.message}`);
+        });
+        
+        const socket = new WebSocket('ws://localhost:3001');
+        
+        socket.onopen = function(event) {
+            socket.onmessage = function(event) {
+                const jsonString = JSON.parse(event.data);
+                const jsonObject = JSON.parse(jsonString);
+                asignar(jsonObject);
+                msg("nuevo dato");
+            };
+            
+            socket.onerror = function(event) {
+                console.error('Error en la conexión WebSocket');
+            };
+        };        
 
     </script>
 
     <footer class="py-16 text-center text-sm text-black dark:text-white/70 text-white">
         Notas v{{ Illuminate\Foundation\Application::VERSION }} (Core v{{ PHP_VERSION }})
     </footer>
-    <script>
-        // Crear la conexión WebSocket
-        const socket = new WebSocket('ws://localhost:3001');
-    
-        // Evento cuando se conecta al WebSocket
-        socket.onopen = function(event) {
-            console.log('Conectado al WebSocket');
-
-            // Evento cuando recibe un mensaje del WebSocket
-            socket.onmessage = function(event) {
-                console.log("data: "+event.data);
-            };
-
-            // Evento de error
-            socket.onerror = function(event) {
-                console.error('Error en la conexión WebSocket');
-            };
-        };
-
-    </script>
-
 @endsection
