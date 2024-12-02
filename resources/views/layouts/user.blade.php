@@ -25,7 +25,7 @@
     </script>
 
     <!-- Scripts -->
-    @vite(['resources/js/app.js'])
+    {{-- @vite(['resources/js/app.js']) --}}
 
     <!-- Styles -->
     @livewireStyles
@@ -56,9 +56,9 @@
         
         @yield('content')
 
-    @stack('modals')
+    {{-- @stack('modals') --}}
 
-    @livewireScripts
+    {{-- @livewireScripts --}}
 </body>
 
 </html>

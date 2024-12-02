@@ -20,5 +20,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('getData', 'App\Http\Controllers\NotaController@apiGet')->name('apiGetData');
-Route::post('apiStorage', 'App\Http\Controllers\NotaController@apiStorage')->name('apiSaveData');
+Route::post('storeData', 'App\Http\Controllers\NotaController@apiStorage')->name('apiSaveData');
 
