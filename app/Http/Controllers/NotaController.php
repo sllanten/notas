@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Nota;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use WebSocket\Client;
+use Illuminate\Support\Facades\Http;
 
 
 class NotaController extends Controller
@@ -21,8 +23,7 @@ class NotaController extends Controller
     }
 
     public function index(){
-        $data= json_decode($this->getData());
-        return view('welcome', compact('data'));
+        return view('welcome');        
     }
 
     public function storage(Request $request){
@@ -44,4 +45,25 @@ class NotaController extends Controller
         return redirect()->route('wellcome');
 
     }
+
+    public function sendToWebSocket($data){
+        $wsUrl = "ws://localhost:3001";
+        $jsonData = json_encode($data);
+        $client = new Client($wsUrl);
+        $client->send($jsonData);
+    }
+
+    public function apiGet(){
+        return response()->json(json_decode($this->getData()), 200);
+    }
+
+    public function apiStorage(Request $request){
+        $ntNew= new Nota();
+        $ntNew->status= $request->status;
+        $ntNew->save();
+
+        $this->sendToWebSocket($this->getData());
+        return response()->json(['status' => 'success saved'], 200);
+    }
+
 }

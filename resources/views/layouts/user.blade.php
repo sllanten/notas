@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-
+    <link rel="icon" type="image/png" sizes="32x32" href="https://laravel.com/img/favicon/apple-touch-icon.png">
     <title>{{ env('APP_NAME') }}</title>
 
     <!-- Fonts -->
@@ -24,12 +24,6 @@
         integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
     </script>
 
-    <!-- Scripts -->
-    @vite(['resources/js/app.js'])
-
-    <!-- Styles -->
-    @livewireStyles
-
     <style>
         a{
             text-decoration: none;
@@ -44,6 +38,15 @@
         .centerJv{
             text-center;
         }
+        .pJv{
+            font-size: 20px;
+        }
+        .hJv{
+           font-size: 70px;
+        }
+        .cardJv{
+           height: 100%;max-width: 100%;
+        }
     </style>    
 
 </head>
@@ -55,10 +58,6 @@
         </svg>
         
         @yield('content')
-
-    @stack('modals')
-
-    @livewireScripts
 </body>
 
 </html>
